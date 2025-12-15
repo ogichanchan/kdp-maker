@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'; // useEffectを削除
+import React, { useState, useRef } from 'react';
 import Papa from 'papaparse';
 import { useTranslation } from 'react-i18next';
 import type { PageSizeKey, LayoutConfig, CsvRow } from '../types';
@@ -17,8 +17,6 @@ export const Home: React.FC = () => {
   const [previewScale, setPreviewScale] = useState(1.0);
 
   // レイアウト設定初期値
-  // ※ポイント: ここで t() を使うのは「初期値」としてのみです。
-  // 後から言語を変えても、ユーザーが設定した（またはCSVに合わせた）ラベルは維持されます。
   const [layout, setLayout] = useState<Record<string, LayoutConfig>>({
     korean: { label: '韓国語', x: 20, y: 150, width: 390, height: 80, size: 50, color: '#000000', align: 'center' },
     yomi:   { label: '読み',   x: 20, y: 230, width: 390, height: 40, size: 18, color: '#666666', align: 'center' },
@@ -26,8 +24,6 @@ export const Home: React.FC = () => {
     exp:    { label: 'ニュアンス・解説',   x: 40, y: 400, width: 350, height: 100, size: 14, color: '#333333', align: 'left' },
     example:{ label: '使える例文',   x: 40, y: 520, width: 350, height: 100, size: 14, color: '#333333', align: 'left' },
   });
-
-  // ★以前あった「言語切り替えでレイアウトを強制更新するuseEffect」は削除しました★
 
   const previewAreaRef = useRef<HTMLDivElement>(null);
   const { generateFile } = useFileGenerator({ 
@@ -47,7 +43,6 @@ export const Home: React.FC = () => {
     setLayout(prev => ({
       ...prev,
       [newKey]: { 
-        // 新規追加時のデフォルト名は翻訳してもOK（ユーザーが後で変えられるため）
         label: t('items.item_'), 
         x: 50, y: 50, width: 200, height: 50, size: 20, color: '#000000', align: 'left' 
       }
@@ -123,9 +118,15 @@ export const Home: React.FC = () => {
           setCsvData(results.data);
           alert(`${results.data.length}件読み込みました`);
         },
-        error: (err: any) => alert("CSV解析失敗")
+        // ▼▼▼ 修正: errを受け取ったら console.error(err) で使うように変更 ▼▼▼
+        error: (err: any) => {
+          console.error("CSV Parse Error:", err);
+          alert("CSV解析失敗");
+        }
       });
     } catch (e: any) {
+      // ▼▼▼ 修正: eを受け取ったら console.error(e) で使うように変更 ▼▼▼
+      console.error("Sheet Load Error:", e);
       alert("取得失敗: URLを確認してください");
     }
   };
@@ -149,11 +150,6 @@ export const Home: React.FC = () => {
         ref={previewAreaRef} 
         className="flex-1 bg-gray-200 relative overflow-hidden flex items-center justify-center p-4 md:h-full h-2/3"
       >
-         {/* 【次の修正への布石】
-            画像出力時にUIパーツ（枠線など）が映り込む問題については、
-            ここでクラス名を制御するか、useFileGenerator側で対処します。
-            まずはデータ読み込み問題を解決しましょう。
-         */}
          <div className="preview-wrapper inline-block shadow-2xl relative">
             <PreviewCanvas 
               pageSizeKey={pageSizeKey}
