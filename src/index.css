@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* アプリ全体のレイアウト調整 */
+body {
+  overflow: hidden; /* スクロールバーの二重表示防止 */
+}
+
+/* プレビューエリアのコンテナ */
+.preview-wrapper {
+  transform-origin: top center;
+  box-shadow: 0 0 20px rgba(0,0,0,0.15);
+  background-color: white;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden; /* はみ出し防止 */
+}
+
+/* センタリングガイド線（中央に来たときだけ表示） */
+.center-guide-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  border-left: 2px dashed #ff0055;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 選択中のアイテムの強調 */
+.active-item {
+  z-index: 10;
+  border: 1px dashed #a855f7; /* 紫色の枠線 */
+  background-color: rgba(168, 85, 247, 0.05);
+}
+
+/* リサイズハンドルのカスタマイズ */
+.react-draggable-handle {
+  z-index: 20;
+}
