@@ -1,0 +1,23 @@
+{
+  "common": {
+    "title": "単語帳メーカー",
+    "ipadVersion": "iPad対応版",
+    "basicSettings": "基本設定",
+    "dataSource": "データソース",
+    "sheetUrlPlaceholder": "スプレッドシート公開URL",
+    "load": "読込",
+    "background": "背景画像",
+    "localCsv": "ローカルCSV",
+    "layoutAndStyle": "レイアウト & スタイル",
+    "generatePdf": "PDF作成",
+    "alertCsvEmpty": "CSVデータをアップロードしてください"
+  },
+  "items": {
+    "korean": "韓国語",
+    "yomi": "読み",
+    "meaning": "意味",
+    "exp": "解説",
+    "example": "例文",
+    "item_": "新規項目" 
+  }
+}

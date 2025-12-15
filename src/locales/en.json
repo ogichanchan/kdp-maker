@@ -1,0 +1,16 @@
+{
+  "common": {
+    "title": "KDP Maker",
+    "dataSource": "Data Source",
+    "load": "Load",
+    "background": "Background",
+    "localCsv": "Local CSV",
+    "layoutAndStyle": "Layout & Style",
+    "generatePdf": "Generate PDF"
+  },
+  "items": {
+    "korean": "Korean",
+    "yomi": "Pronunciation",
+    "meaning": "Meaning"
+  }
+}
