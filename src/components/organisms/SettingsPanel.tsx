@@ -3,6 +3,7 @@ import { Upload, FileText, Download, Tablet, Link as LinkIcon } from 'lucide-rea
 import { PAGE_SIZES, type PageSizeKey, type LayoutConfig } from '../../types';
 import { FileInput } from '../atoms/FileInput';
 import { StyleRow } from '../molecules/StyleRow';
+import { SeoContent } from '../molecules/SeoContent';
 
 interface SettingsPanelProps {
   pageSizeKey: PageSizeKey;
@@ -86,6 +87,11 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             ))}
           </div>
         </section>
+
+        {/* ▼▼▼ 2. 追加: ここにSEOコンテンツを配置 ▼▼▼ */}
+        <SeoContent />
+        {/* ▲▲▲ 追加ここまで ▲▲▲ */}
+        
       </div>
 
       <div className="p-4 border-t bg-white">
