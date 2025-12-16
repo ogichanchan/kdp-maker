@@ -1,73 +1,59 @@
-# React + TypeScript + Vite
+# 📚 単語帳メーカー (Wordbook Maker)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Kindle Direct Publishing (KDP) の固定レイアウト書籍作成、およびSNS向け画像生成を目的としたWebアプリケーションです。
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠️ 開発環境構築手順
 
-## React Compiler
+このプロジェクトは React (TypeScript) と Tailwind CSS を使用して構築されています。パッケージ管理には npm を使用します。
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 1. リポジトリのクローン
 
-## Expanding the ESLint configuration
+git clone https://github.com/ogichanchan/kdp-maker.git
+cd kdp-maker
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 2. 依存関係のインストール
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+必要なライブラリ（React, Tailwind, html2canvas, jszip, papaparseなど）をインストールします。
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+npm install
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### 3. ローカル環境での実行
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+開発サーバーを起動します。コードの変更は即座にブラウザに反映されます。
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+npm run dev
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+ブラウザで http://localhost:5173 (またはターミナルに表示されたURL) にアクセスしてください。
+
+### 4. ビルドとデプロイ
+
+本番環境向けにコードを最適化し、ビルドします。ビルド完了後、dist ディレクトリが生成されます。
+
+npm run build
+
+#### Vercelへのデプロイ
+
+GitHubにプッシュすることで、Vercelの自動デプロイがトリガーされます。
+
+git push origin main
+
+---
+
+## 📝 主な機能
+
+- **データ連携:** Googleスプレッドシートの公開CSV URL またはローカルCSVファイルからのデータ読み込み。
+- **レイアウト調整:** 要素のドラッグ＆ドロップによる自由な位置調整、中央揃えスナップ、リサイズ。
+- **ガイド機能:** 中央ガイド、KDP印刷用余白ガイドの表示/非表示。
+- **ファイル出力:**
+    - PDF (電子書籍用固定レイアウト)
+    - PNG/JPEG (SNSシェア、表紙作成用)
+    - 全ページ画像一括ZIP出力
+
+---
+
+## ⚠️ トラブルシューティング
+
+- **ビルドエラー:** もし TS6133 (未使用変数) のエラーが出た場合、console.error(err) のように変数を使用するか、変数名を _err のようにアンダースコアで始めることで回避してください。
+- **描画エラー:** ブラウザのキャッシュが原因の場合があるため、Ctrl + Shift + R (スーパーリロード) を試してください。

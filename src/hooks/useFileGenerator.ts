@@ -1,10 +1,15 @@
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import JSZip from 'jszip'; // 追加
-import { saveAs } from 'file-saver'; // 追加
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 import { useCallback, type RefObject } from 'react';
-import { PAGE_SIZES, type PageSizeKey, type LayoutConfig, type CsvRow } from '../types';
+
 import { loadFontToBase64 } from '../utils/fontLoader';
+
+// ▼▼▼ 修正箇所: PAGE_SIZES は値なので、型定義と分けてインポートします ▼▼▼
+import { PAGE_SIZES } from '../types';
+import type { PageSizeKey, LayoutConfig, CsvRow } from '../types';
+// ▲▲▲ 修正ここまで ▲▲▲
 
 interface UseFileGeneratorProps {
   bgImage: string | null;
@@ -18,15 +23,18 @@ export type FileType = 'pdf' | 'png' | 'jpeg';
 
 export const useFileGenerator = ({ bgImage, csvData, pageSizeKey, layout, previewRef }: UseFileGeneratorProps) => {
   
-  // PDF生成（既存のまま）
+  // PDF生成（既存ロジック）
   const generatePDF = useCallback(async () => {
     if (csvData.length === 0) {
       alert("CSVデータがありません。");
       return;
     }
-    const ps = PAGE_SIZES[pageSizeKey];
+    const ps = PAGE_SIZES[pageSizeKey]; // ★ここでpsの型がPageSizeとなり、marginは存在します
+    
     try {
+      // ... (中略: PDF生成ロジック) ...
       const doc = new jsPDF({ unit: 'pt', format: [ps.widthPt, ps.heightPt] });
+      // フォント読み込み
       const fontUrl = '/fonts/NotoSansKR-Regular.ttf'; 
       try {
         const fontName = 'CustomFont';
@@ -64,7 +72,7 @@ export const useFileGenerator = ({ bgImage, csvData, pageSizeKey, layout, previe
     }
   }, [bgImage, csvData, pageSizeKey, layout]);
 
-  // ▼▼▼ 画像ZIP生成（新規実装） ▼▼▼
+  // 画像ZIP生成（既存ロジック）
   const generateImagesZip = useCallback(async (type: 'png' | 'jpeg') => {
     if (!previewRef.current) return;
     if (csvData.length === 0) {
@@ -79,19 +87,15 @@ export const useFileGenerator = ({ bgImage, csvData, pageSizeKey, layout, previe
     const zip = new JSZip();
     const folder = zip.folder("wordbook_images");
     
-    // 処理中はユーザーに分かるようにしたいので、本来はLoading表示推奨ですが、
-    // ここでは簡易的にアラートで開始を通知（またはUI側で制御）
     const confirmMsg = `${csvData.length}枚の画像を生成します。時間がかかる場合がありますがよろしいですか？`;
     if (!confirm(confirmMsg)) return;
 
     try {
-      // 1枚ずつデータを差し替えて撮影
       for (let i = 0; i < csvData.length; i++) {
         const row = csvData[i];
 
         // 1. DOM上のテキストを一時的に書き換え
         Object.keys(layout).forEach(key => {
-          // data-layout-key属性を使って要素を特定
           const targetEl = element.querySelector(`[data-layout-key="${key}"]`);
           if (targetEl) {
             targetEl.textContent = row[layout[key].label] || '';
@@ -100,10 +104,9 @@ export const useFileGenerator = ({ bgImage, csvData, pageSizeKey, layout, previe
 
         // 2. html2canvasで撮影
         const canvas = await html2canvas(element, {
-          scale: 2, // 高画質
+          scale: 2,
           useCORS: true,
           backgroundColor: null,
-          // ★ここで不要なパーツを隠す
           onclone: (clonedDoc) => {
             const hiddenElements = clonedDoc.querySelectorAll('.export-hidden');
             hiddenElements.forEach((el) => {
@@ -115,7 +118,6 @@ export const useFileGenerator = ({ bgImage, csvData, pageSizeKey, layout, previe
         // 3. ZIPに追加
         const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, `image/${type}`));
         if (blob && folder) {
-          // ファイル名: card_001.png のようにゼロ埋め
           const fileName = `card_${String(i + 1).padStart(3, '0')}.${type}`;
           folder.file(fileName, blob);
         }

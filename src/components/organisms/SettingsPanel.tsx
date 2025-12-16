@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Upload, FileText, Download, Tablet, Link as LinkIcon, Languages, Plus, HelpCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { PAGE_SIZES, type PageSizeKey, type LayoutConfig } from '../../types';
+import { PAGE_SIZES } from '../../types';
+import type { PageSizeKey, LayoutConfig } from '../../types/index';
 import { FileInput } from '../atoms/FileInput';
 import { StyleRow } from '../molecules/StyleRow';
 import { SeoContent } from '../molecules/SeoContent';
@@ -19,6 +20,13 @@ interface SettingsPanelProps {
   onAddItem: () => void;
   onDeleteItem: (key: string) => void;
   onGenerateFile: (type: FileType) => void;
+  
+  // ▼ ガイド設定のPropsを追加 ▼
+  showCenterGuide: boolean;
+  setShowCenterGuide: (show: boolean) => void;
+  showMarginGuide: boolean;
+  setShowMarginGuide: (show: boolean) => void;
+  // ▲
 }
 
 export const SettingsPanel: React.FC<SettingsPanelProps> = ({
@@ -32,6 +40,12 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onAddItem,
   onDeleteItem,
   onGenerateFile,
+  // ▼ Propsを受け取る ▼
+  showCenterGuide,
+  setShowCenterGuide,
+  showMarginGuide,
+  setShowMarginGuide,
+  // ▲
 }) => {
   const [sheetUrl, setSheetUrl] = useState('');
   const [fileType, setFileType] = useState<FileType>('pdf');
@@ -44,7 +58,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
   return (
     <div className="w-full md:w-80 bg-white border-r border-gray-200 flex flex-col z-20 shadow-xl shrink-0 h-1/3 md:h-full">
-      {/* Header */}
+      {/* Header (中略) */}
       <div className="p-3 border-b border-gray-200 bg-purple-50 flex justify-between items-center">
         <h1 className="text-lg font-bold text-purple-800 flex items-center gap-2">
           <Tablet className="w-5 h-5" />
@@ -61,7 +75,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
-        {/* Basic Settings */}
+        {/* Basic Settings (中略: データソース、サイズ、画像/CSVアップロード) */}
         <section className="space-y-3">
           <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t('common.dataSource')}</h2>
           
@@ -96,7 +110,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           </div>
         </section>
 
-        {/* Style Settings */}
+        {/* Style Settings (中略: レイアウト/スタイル設定) */}
         <section className="space-y-3">
           <div className="flex justify-between items-center">
             <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t('common.layoutAndStyle')}</h2>
@@ -113,15 +127,41 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
               <StyleRow 
                 key={key} 
                 id={key} 
-                // ▼▼▼ 修正箇所：翻訳による上書きを削除し、layout[key]をそのまま渡す ▼▼▼
                 config={layout[key]} 
-                // ▲▲▲ これで編集が可能になります ▲▲▲
                 onChange={onStyleChange} 
                 onDelete={onDeleteItem}
               />
             ))}
           </div>
         </section>
+        
+        {/* ▼ 新規追加: ガイド線設定セクション ▼ */}
+        <section className="space-y-3 p-2 border-t border-gray-200">
+            <h2 className="text-xs font-bold text-gray-400 uppercase tracking-wider">ガイド線設定</h2>
+            <div className="space-y-2">
+                <label className="flex items-center text-sm cursor-pointer">
+                    <input
+                        type="checkbox"
+                        checked={showCenterGuide}
+                        onChange={(e) => setShowCenterGuide(e.target.checked)}
+                        className="form-checkbox text-purple-600 h-4 w-4"
+                    />
+                    <span className="ml-2 text-gray-700">中央揃えガイド（青線）を表示</span>
+                </label>
+                
+                <label className="flex items-center text-sm cursor-pointer">
+                    <input
+                        type="checkbox"
+                        checked={showMarginGuide}
+                        onChange={(e) => setShowMarginGuide(e.target.checked)}
+                        className="form-checkbox text-purple-600 h-4 w-4"
+                    />
+                    <span className="ml-2 text-gray-700">印刷余白ガイド（KDP仕様）を表示</span>
+                </label>
+            </div>
+        </section>
+        {/* ▲ 新規追加ここまで ▲ */}
+
 
         <SeoContent />
       </div>

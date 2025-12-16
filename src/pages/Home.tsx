@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import Papa from 'papaparse';
 import { useTranslation } from 'react-i18next';
-import type { PageSizeKey, LayoutConfig, CsvRow } from '../types';
+import type { PageSizeKey, LayoutConfig, CsvRow } from '../types/index'; // index.tsを参照
 import { SettingsPanel } from '../components/organisms/SettingsPanel';
 import { PreviewCanvas } from '../components/organisms/PreviewCanvas';
 import { useFileGenerator } from '../hooks/useFileGenerator';
@@ -15,8 +15,8 @@ export const Home: React.FC = () => {
   const [pageSizeKey, setPageSizeKey] = useState<PageSizeKey>('6x9');
   const [showCenterGuide, setShowCenterGuide] = useState(false);
   const [previewScale, setPreviewScale] = useState(1.0);
+  const [showMarginGuide, setShowMarginGuide] = useState(false);
 
-  // レイアウト設定初期値
   const [layout, setLayout] = useState<Record<string, LayoutConfig>>({
     korean: { label: '韓国語', x: 20, y: 150, width: 390, height: 80, size: 50, color: '#000000', align: 'center' },
     yomi:   { label: '読み',   x: 20, y: 230, width: 390, height: 40, size: 18, color: '#666666', align: 'center' },
@@ -30,7 +30,8 @@ export const Home: React.FC = () => {
     bgImage, csvData, pageSizeKey, layout, previewRef: previewAreaRef 
   });
 
-  // --- イベントハンドラ ---
+  // --- イベントハンドラ (中略) ---
+
   const handleStyleChange = (key: string, field: keyof LayoutConfig, value: any) => {
     setLayout(prev => ({
       ...prev,
@@ -118,18 +119,17 @@ export const Home: React.FC = () => {
           setCsvData(results.data);
           alert(`${results.data.length}件読み込みました`);
         },
-        // ▼▼▼ 修正: errを受け取ったら console.error(err) で使うように変更 ▼▼▼
         error: (err: any) => {
           console.error("CSV Parse Error:", err);
           alert("CSV解析失敗");
         }
       });
     } catch (e: any) {
-      // ▼▼▼ 修正: eを受け取ったら console.error(e) で使うように変更 ▼▼▼
       console.error("Sheet Load Error:", e);
       alert("取得失敗: URLを確認してください");
     }
   };
+  // --- イベントハンドラ (ここまで) ---
 
   return (
     <div className="h-screen bg-gray-100 flex flex-col md:flex-row overflow-hidden font-sans text-gray-800">
@@ -144,13 +144,19 @@ export const Home: React.FC = () => {
         onAddItem={handleAddItem}
         onDeleteItem={handleDeleteItem}
         onGenerateFile={generateFile} 
+        showCenterGuide={showCenterGuide}
+        setShowCenterGuide={setShowCenterGuide}
+        showMarginGuide={showMarginGuide}
+        setShowMarginGuide={setShowMarginGuide}
       />
 
       <div 
         ref={previewAreaRef} 
+        // 重要な修正: flex-1 で親要素いっぱいに広がり、中身を中央に配置する
         className="flex-1 bg-gray-200 relative overflow-hidden flex items-center justify-center p-4 md:h-full h-2/3"
       >
-         <div className="preview-wrapper inline-block shadow-2xl relative">
+         {/* 重要な修正: inline-block は不要。PreviewCanvas自体がサイズを持つべき */}
+         <div className="preview-wrapper shadow-2xl relative"> 
             <PreviewCanvas 
               pageSizeKey={pageSizeKey}
               bgImage={bgImage}
@@ -160,7 +166,7 @@ export const Home: React.FC = () => {
               previewScale={previewScale}
               setPreviewScale={setPreviewScale}
               showCenterGuide={showCenterGuide}
-              setShowCenterGuide={setShowCenterGuide}
+              showMarginGuide={showMarginGuide}
             />
          </div>
       </div>
